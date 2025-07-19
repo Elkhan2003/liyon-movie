@@ -56,7 +56,6 @@ body {
 		sans-serif;
 	background-color: #0d1117;
 	color: #e6edf3;
-	line-height: 1.6;
 }
 
 li {
