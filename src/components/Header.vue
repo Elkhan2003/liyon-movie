@@ -113,9 +113,9 @@ const handleSearch = () => {
 <style scoped lang="scss">
 .header {
 	position: relative;
-	background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+	/* background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #1e1e3f 100%); */
 	backdrop-filter: blur(10px);
-	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	border-bottom: 1px solid rgba(139, 92, 246, 0.1);
 	padding: 1rem 0;
 	overflow: hidden;
 
@@ -126,16 +126,16 @@ const handleSearch = () => {
 		left: 0;
 		right: 0;
 		bottom: 0;
-		background: radial-gradient(
+		/* background: radial-gradient(
 				circle at 20% 50%,
-				rgba(120, 119, 198, 0.1) 0%,
+				rgba(139, 92, 246, 0.1) 0%,
 				transparent 50%
 			),
 			radial-gradient(
 				circle at 80% 20%,
-				rgba(255, 119, 198, 0.1) 0%,
+				rgba(168, 85, 247, 0.08) 0%,
 				transparent 50%
-			);
+			); */
 		pointer-events: none;
 	}
 
@@ -159,13 +159,13 @@ const handleSearch = () => {
 			.logo-icon {
 				width: 40px;
 				height: 40px;
-				background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+				background: linear-gradient(45deg, #8b5cf6, #a855f7);
 				border-radius: 8px;
 				display: flex;
 				align-items: center;
 				justify-content: center;
 				color: white;
-				box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+				box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
 				transition: transform 0.3s ease;
 
 				&:hover {
@@ -174,7 +174,7 @@ const handleSearch = () => {
 			}
 
 			.logo-text {
-				background: linear-gradient(45deg, #ffffff, #a8e6cf);
+				background: linear-gradient(45deg, #ffffff, #c084fc);
 				-webkit-background-clip: text;
 				-webkit-text-fill-color: transparent;
 				background-clip: text;
@@ -208,7 +208,7 @@ const handleSearch = () => {
 							left: 0;
 							width: 0;
 							height: 2px;
-							background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+							background: linear-gradient(45deg, #8b5cf6, #a855f7);
 							transition: width 0.3s ease;
 						}
 
@@ -221,7 +221,7 @@ const handleSearch = () => {
 						}
 
 						&--active {
-							color: #ff6b6b;
+							color: #a855f7;
 
 							&::after {
 								width: 100%;
@@ -244,8 +244,8 @@ const handleSearch = () => {
 				.search-input {
 					width: 100%;
 					padding: 0.75rem 3rem 0.75rem 1rem;
-					background: rgba(255, 255, 255, 0.1);
-					border: 1px solid rgba(255, 255, 255, 0.2);
+					background: rgba(255, 255, 255, 0.08);
+					border: 1px solid rgba(139, 92, 246, 0.2);
 					border-radius: 25px;
 					color: white;
 					font-size: 0.9rem;
@@ -258,16 +258,16 @@ const handleSearch = () => {
 
 					&:focus {
 						outline: none;
-						border-color: #ff6b6b;
-						background: rgba(255, 255, 255, 0.15);
-						box-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
+						border-color: #8b5cf6;
+						background: rgba(255, 255, 255, 0.12);
+						box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
 					}
 				}
 
 				.search-btn {
 					position: absolute;
 					right: 8px;
-					background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+					background: linear-gradient(45deg, #8b5cf6, #a855f7);
 					border: none;
 					border-radius: 50%;
 					width: 36px;
@@ -281,7 +281,7 @@ const handleSearch = () => {
 
 					&:hover {
 						transform: scale(1.1);
-						box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+						box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
 					}
 				}
 			}
@@ -303,24 +303,24 @@ const handleSearch = () => {
 				font-size: 0.9rem;
 
 				&--primary {
-					background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+					background: linear-gradient(45deg, #8b5cf6, #a855f7);
 					color: white;
-					box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+					box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
 
 					&:hover {
 						transform: translateY(-2px);
-						box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+						box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
 					}
 				}
 
 				&--secondary {
 					background: transparent;
 					color: white;
-					border: 1px solid rgba(255, 255, 255, 0.3);
+					border: 1px solid rgba(139, 92, 246, 0.3);
 
 					&:hover {
-						background: rgba(255, 255, 255, 0.1);
-						border-color: rgba(255, 255, 255, 0.5);
+						background: rgba(139, 92, 246, 0.1);
+						border-color: rgba(139, 92, 246, 0.5);
 					}
 				}
 			}
@@ -344,17 +344,17 @@ const handleSearch = () => {
 			bottom: 0;
 			background-image: radial-gradient(
 					2px 2px at 20px 30px,
-					rgba(255, 255, 255, 0.1),
+					rgba(139, 92, 246, 0.1),
 					transparent
 				),
 				radial-gradient(
 					2px 2px at 40px 70px,
-					rgba(255, 255, 255, 0.1),
+					rgba(168, 85, 247, 0.1),
 					transparent
 				),
 				radial-gradient(
 					1px 1px at 90px 40px,
-					rgba(255, 255, 255, 0.1),
+					rgba(192, 132, 252, 0.1),
 					transparent
 				);
 			background-repeat: repeat;
@@ -370,6 +370,85 @@ const handleSearch = () => {
 	}
 	100% {
 		background-position: 100px 100px;
+	}
+}
+
+@media (max-width: 768px) {
+	.header {
+		.content {
+			.nav {
+				display: none;
+
+				&--open {
+					display: flex;
+					position: absolute;
+					top: 100%;
+					left: 0;
+					right: 0;
+					background: rgba(15, 15, 35, 0.95);
+					backdrop-filter: blur(20px);
+					border: 1px solid rgba(139, 92, 246, 0.2);
+					border-radius: 0 0 15px 15px;
+					padding: 2rem;
+
+					.nav-list {
+						flex-direction: column;
+						gap: 1.5rem;
+						width: 100%;
+					}
+				}
+			}
+
+			.search {
+				display: none;
+			}
+
+			.user-actions {
+				display: none;
+			}
+
+			.mobile-menu-btn {
+				display: flex;
+				flex-direction: column;
+				gap: 4px;
+				background: transparent;
+				border: none;
+				cursor: pointer;
+				padding: 8px;
+
+				.hamburger-line {
+					width: 24px;
+					height: 2px;
+					background: linear-gradient(45deg, #8b5cf6, #a855f7);
+					transition: all 0.3s ease;
+					transform-origin: center;
+
+					&--open {
+						&:nth-child(1) {
+							transform: rotate(45deg) translate(6px, 6px);
+						}
+
+						&:nth-child(2) {
+							opacity: 0;
+						}
+
+						&:nth-child(3) {
+							transform: rotate(-45deg) translate(6px, -6px);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+@media (min-width: 769px) {
+	.header {
+		.content {
+			.mobile-menu-btn {
+				display: none;
+			}
+		}
 	}
 }
 </style>

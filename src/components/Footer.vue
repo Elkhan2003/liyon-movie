@@ -185,8 +185,8 @@ const socialLinks = [
 <style scoped lang="scss">
 .footer {
 	position: relative;
-	background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
-	border-top: 1px solid rgba(255, 255, 255, 0.1);
+	/* background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #1e1e3f 100%); */
+	border-top: 1px solid rgba(139, 92, 246, 0.1);
 	overflow: hidden;
 	margin-top: auto;
 
@@ -197,30 +197,22 @@ const socialLinks = [
 		left: 0;
 		right: 0;
 		bottom: 0;
-		background: radial-gradient(
+		/* background: radial-gradient(
 				circle at 20% 80%,
-				rgba(120, 119, 198, 0.1) 0%,
+				rgba(139, 92, 246, 0.1) 0%,
 				transparent 50%
 			),
 			radial-gradient(
 				circle at 80% 20%,
-				rgba(255, 119, 198, 0.1) 0%,
+				rgba(168, 85, 247, 0.08) 0%,
 				transparent 50%
 			),
 			radial-gradient(
 				circle at 40% 40%,
-				rgba(255, 107, 107, 0.05) 0%,
+				rgba(192, 132, 252, 0.05) 0%,
 				transparent 50%
-			);
+			); */
 		pointer-events: none;
-	}
-
-	.container {
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: 0 1rem;
-		position: relative;
-		z-index: 10;
 	}
 
 	.footer-content {
@@ -256,13 +248,13 @@ const socialLinks = [
 				.logo-icon {
 					width: 40px;
 					height: 40px;
-					background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+					background: linear-gradient(45deg, #8b5cf6, #a855f7);
 					border-radius: 8px;
 					display: flex;
 					align-items: center;
 					justify-content: center;
 					color: white;
-					box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+					box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
 					transition: transform 0.3s ease;
 
 					&:hover {
@@ -271,7 +263,7 @@ const socialLinks = [
 				}
 
 				.logo-text {
-					background: linear-gradient(45deg, #ffffff, #a8e6cf);
+					background: linear-gradient(45deg, #ffffff, #c084fc);
 					-webkit-background-clip: text;
 					-webkit-text-fill-color: transparent;
 					background-clip: text;
@@ -298,7 +290,7 @@ const socialLinks = [
 				.social-link {
 					width: 40px;
 					height: 40px;
-					background: rgba(255, 255, 255, 0.1);
+					background: rgba(255, 255, 255, 0.08);
 					border-radius: 50%;
 					display: flex;
 					align-items: center;
@@ -306,13 +298,13 @@ const socialLinks = [
 					color: rgba(255, 255, 255, 0.7);
 					transition: all 0.3s ease;
 					backdrop-filter: blur(10px);
-					border: 1px solid rgba(255, 255, 255, 0.1);
+					border: 1px solid rgba(139, 92, 246, 0.2);
 
 					&:hover {
-						background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+						background: linear-gradient(45deg, #8b5cf6, #a855f7);
 						color: white;
 						transform: translateY(-2px) scale(1.1);
-						box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+						box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
 					}
 				}
 			}
@@ -335,8 +327,8 @@ const socialLinks = [
 					.newsletter-input {
 						width: 100%;
 						padding: 0.75rem 3rem 0.75rem 1rem;
-						background: rgba(255, 255, 255, 0.1);
-						border: 1px solid rgba(255, 255, 255, 0.2);
+						background: rgba(255, 255, 255, 0.08);
+						border: 1px solid rgba(139, 92, 246, 0.2);
 						border-radius: 25px;
 						color: white;
 						font-size: 0.9rem;
@@ -349,16 +341,16 @@ const socialLinks = [
 
 						&:focus {
 							outline: none;
-							border-color: #ff6b6b;
-							background: rgba(255, 255, 255, 0.15);
-							box-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
+							border-color: #8b5cf6;
+							background: rgba(255, 255, 255, 0.12);
+							box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
 						}
 					}
 
 					.newsletter-btn {
 						position: absolute;
 						right: 8px;
-						background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+						background: linear-gradient(45deg, #8b5cf6, #a855f7);
 						border: none;
 						border-radius: 50%;
 						width: 32px;
@@ -372,7 +364,7 @@ const socialLinks = [
 
 						&:hover {
 							transform: scale(1.1);
-							box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+							box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
 						}
 					}
 				}
@@ -393,7 +385,7 @@ const socialLinks = [
 				left: 0;
 				width: 2rem;
 				height: 2px;
-				background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+				background: linear-gradient(45deg, #8b5cf6, #a855f7);
 
 				@media (max-width: 768px) {
 					left: 50%;
@@ -425,7 +417,7 @@ const socialLinks = [
 						left: 0;
 						width: 0;
 						height: 1px;
-						background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+						background: linear-gradient(45deg, #8b5cf6, #a855f7);
 						transition: width 0.3s ease;
 					}
 
@@ -443,7 +435,7 @@ const socialLinks = [
 	}
 
 	.footer-bottom {
-		border-top: 1px solid rgba(255, 255, 255, 0.1);
+		border-top: 1px solid rgba(139, 92, 246, 0.1);
 		padding: 2rem 0;
 
 		.footer-bottom-content {
@@ -485,7 +477,7 @@ const socialLinks = [
 						transition: color 0.3s ease;
 
 						&:hover {
-							color: #ff6b6b;
+							color: #a855f7;
 						}
 					}
 				}
@@ -510,17 +502,17 @@ const socialLinks = [
 			bottom: 0;
 			background-image: radial-gradient(
 					1px 1px at 20px 30px,
-					rgba(255, 255, 255, 0.1),
+					rgba(139, 92, 246, 0.1),
 					transparent
 				),
 				radial-gradient(
 					1px 1px at 40px 70px,
-					rgba(255, 255, 255, 0.1),
+					rgba(168, 85, 247, 0.1),
 					transparent
 				),
 				radial-gradient(
 					1px 1px at 90px 40px,
-					rgba(255, 255, 255, 0.1),
+					rgba(192, 132, 252, 0.1),
 					transparent
 				);
 			background-repeat: repeat;
