@@ -1,47 +1,67 @@
-// src/api/index.ts
 const baseURL = 'https://1116a39bcd510908.mokky.dev';
 
+interface ApiResponse<T = any> {
+	data: T;
+}
+
+interface ApiRequestConfig {
+	params?: Record<string, any>;
+	headers?: Record<string, string>;
+}
+
 export const api_unimedx = {
-	get: <T = any>(url: string, params?: Record<string, any>): Promise<T> => {
-		return $fetch<T>(`${baseURL}${url}`, {
+	get: async <T = any>(
+		url: string,
+		config?: ApiRequestConfig
+	): Promise<ApiResponse<T>> => {
+		const data = await $fetch<T>(`${baseURL}${url}`, {
 			method: 'GET',
-			query: params
+			query: config?.params,
+			headers: config?.headers
 		});
+		return { data };
 	},
 
-	post: <T = any>(url: string, data?: any): Promise<T> => {
-		return $fetch<T>(`${baseURL}${url}`, {
+	post: async <T = any>(
+		url: string,
+		requestData?: any,
+		config?: ApiRequestConfig
+	): Promise<ApiResponse<T>> => {
+		const data = await $fetch<T>(`${baseURL}${url}`, {
 			method: 'POST',
-			body: data,
+			body: requestData,
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
+				...config?.headers
 			}
 		});
+		return { data };
 	},
 
-	patch: <T = any>(url: string, data?: any): Promise<T> => {
-		return $fetch<T>(`${baseURL}${url}`, {
+	patch: async <T = any>(
+		url: string,
+		requestData?: any,
+		config?: ApiRequestConfig
+	): Promise<ApiResponse<T>> => {
+		const data = await $fetch<T>(`${baseURL}${url}`, {
 			method: 'PATCH',
-			body: data,
+			body: requestData,
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
+				...config?.headers
 			}
 		});
+		return { data };
 	},
 
-	delete: <T = any>(url: string): Promise<T> => {
-		return $fetch<T>(`${baseURL}${url}`, {
-			method: 'DELETE'
+	delete: async <T = any>(
+		url: string,
+		config?: ApiRequestConfig
+	): Promise<ApiResponse<T>> => {
+		const data = await $fetch<T>(`${baseURL}${url}`, {
+			method: 'DELETE',
+			headers: config?.headers
 		});
+		return { data };
 	}
 };
-
-// Если вы хотите оставить axios, то используйте эту конфигурацию:
-// import axios from 'axios';
-
-// export const api_unimedx = axios.create({
-// 	baseURL: 'https://1116a39bcd510908.mokky.dev',
-// 	headers: {
-// 		'Content-Type': 'application/json'
-// 	}
-// });

@@ -7,11 +7,7 @@ const currentPage = ref(1);
 const itemsPerPage = ref(10);
 
 // API queries and mutations
-const {
-	data: todosData,
-	isLoading,
-	error
-} = useGetTodosQuery({
+const { data: todosData, isLoading: isLoadingTodo } = useGetTodosQuery({
 	page: currentPage.value,
 	limit: itemsPerPage.value
 });
@@ -27,12 +23,7 @@ const todos = computed(() => todosData.value?.items || []);
 				<h1 class="todo__title">Todo List</h1>
 
 				<!-- Loading state -->
-				<div v-if="isLoading" class="todo__loading">Загрузка...</div>
-
-				<!-- Error state -->
-				<div v-else-if="error" class="todo__error">
-					Ошибка: {{ error.message }}
-				</div>
+				<div v-if="isLoadingTodo" class="todo__loading">Загрузка...</div>
 
 				<!-- Todo list -->
 				<div v-else class="todo__list">
@@ -40,10 +31,9 @@ const todos = computed(() => todosData.value?.items || []);
 						Нет задач. Добавьте первую задачу!
 					</div>
 
-					<div v-for="todo in todos" :key="todo.id" class="todo__item">
-						<!-- View mode -->
+					<div v-for="(item, index) in todos" :key="index" class="todo__item">
 						<div class="todo__view">
-							<span class="todo__text">{{ todo.title }}</span>
+							<span class="todo__text">{{ item.title }}</span>
 						</div>
 					</div>
 				</div>
