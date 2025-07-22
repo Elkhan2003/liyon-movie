@@ -4,6 +4,6 @@ export default defineNuxtConfig({
 	devtools: { enabled: true },
 	srcDir: 'src/',
 	experimental: {
-		viewTransition: true
+		viewTransition: false
 	}
 });

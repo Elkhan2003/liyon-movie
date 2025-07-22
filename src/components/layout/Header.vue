@@ -17,6 +17,10 @@ const navigationRoutes = [
 		path: '/tv-show'
 	},
 	{
+		name: 'Задачи',
+		path: '/todo'
+	},
+	{
 		name: 'Топ 100',
 		path: '/top-100'
 	}
