@@ -201,7 +201,6 @@ const handleSearch = () => {
 						}
 						&.active {
 							color: #a855f7;
-
 							&::after {
 								width: 100%;
 							}
