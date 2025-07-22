@@ -105,11 +105,11 @@ button:hover {
 }
 
 ::-webkit-scrollbar-thumb {
-	background: #f85149;
+	background: #a855f7;
 	border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-	background: #ff6b6b;
+	background: #8b5cf6;
 }
 </style>

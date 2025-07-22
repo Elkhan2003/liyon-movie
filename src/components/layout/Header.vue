@@ -1,12 +1,26 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-
-const isMenuOpen = ref(false);
 const searchQuery = ref('');
 
-const toggleMenu = () => {
-	isMenuOpen.value = !isMenuOpen.value;
-};
+// Массив роутов для навигации
+const navigationRoutes = [
+	{
+		name: 'Главная',
+		path: '/'
+	},
+	{
+		name: 'Фильмы',
+		path: '/movies'
+	},
+	{
+		name: 'TV шоу',
+		path: '/tv-show'
+	},
+	{
+		name: 'Топ 100',
+		path: '/top-100'
+	}
+];
 
 const handleSearch = () => {
 	if (searchQuery.value.trim()) {
@@ -33,22 +47,16 @@ const handleSearch = () => {
 				</div>
 
 				<!-- Навигация -->
-				<nav class="nav" :class="{ 'nav--open': isMenuOpen }">
+				<nav class="nav">
 					<ul class="nav-list">
-						<li class="nav-item">
-							<a href="#" class="nav-link nav-link--active">Главная</a>
-						</li>
-						<li class="nav-item">
-							<a href="#" class="nav-link">Фильмы</a>
-						</li>
-						<li class="nav-item">
-							<a href="#" class="nav-link">Сериалы</a>
-						</li>
-						<li class="nav-item">
-							<a href="#" class="nav-link">Жанры</a>
-						</li>
-						<li class="nav-item">
-							<a href="#" class="nav-link">Топ 100</a>
+						<li
+							v-for="(item, index) in navigationRoutes"
+							:key="index"
+							class="nav-item"
+						>
+							<NuxtLink :to="item.path" class="nav-link" activeClass="active">
+								{{ item.name }}
+							</NuxtLink>
 						</li>
 					</ul>
 				</nav>
@@ -83,22 +91,6 @@ const handleSearch = () => {
 					<button class="btn btn--secondary">Войти</button>
 					<button class="btn btn--primary">Регистрация</button>
 				</div>
-
-				<!-- Мобильное меню -->
-				<button class="mobile-menu-btn" @click="toggleMenu">
-					<span
-						class="hamburger-line"
-						:class="{ 'hamburger-line--open': isMenuOpen }"
-					></span>
-					<span
-						class="hamburger-line"
-						:class="{ 'hamburger-line--open': isMenuOpen }"
-					></span>
-					<span
-						class="hamburger-line"
-						:class="{ 'hamburger-line--open': isMenuOpen }"
-					></span>
-				</button>
 			</div>
 		</div>
 
@@ -113,7 +105,6 @@ const handleSearch = () => {
 <style scoped lang="scss">
 .header {
 	position: relative;
-	/* background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #1e1e3f 100%); */
 	backdrop-filter: blur(10px);
 	border-bottom: 1px solid rgba(139, 92, 246, 0.1);
 	padding: 1rem 0;
@@ -126,16 +117,6 @@ const handleSearch = () => {
 		left: 0;
 		right: 0;
 		bottom: 0;
-		/* background: radial-gradient(
-				circle at 20% 50%,
-				rgba(139, 92, 246, 0.1) 0%,
-				transparent 50%
-			),
-			radial-gradient(
-				circle at 80% 20%,
-				rgba(168, 85, 247, 0.08) 0%,
-				transparent 50%
-			); */
 		pointer-events: none;
 	}
 
@@ -194,12 +175,12 @@ const handleSearch = () => {
 
 				.nav-item {
 					.nav-link {
-						color: rgba(255, 255, 255, 0.8);
-						text-decoration: none;
-						font-weight: 500;
-						transition: all 0.3s ease;
 						position: relative;
 						padding: 0.5rem 0;
+						text-decoration: none;
+						font-weight: 500;
+						transition: 0.3s ease;
+						color: #ffffffcc;
 
 						&::after {
 							content: '';
@@ -209,18 +190,16 @@ const handleSearch = () => {
 							width: 0;
 							height: 2px;
 							background: linear-gradient(45deg, #8b5cf6, #a855f7);
-							transition: width 0.3s ease;
+							transition: 0.3s ease;
 						}
 
-						&:hover {
-							color: white;
-
+						&:not(.active):hover {
+							color: #fff;
 							&::after {
 								width: 100%;
 							}
 						}
-
-						&--active {
+						&.active {
 							color: #a855f7;
 
 							&::after {
@@ -370,85 +349,6 @@ const handleSearch = () => {
 	}
 	100% {
 		background-position: 100px 100px;
-	}
-}
-
-@media (max-width: 768px) {
-	.header {
-		.content {
-			.nav {
-				display: none;
-
-				&--open {
-					display: flex;
-					position: absolute;
-					top: 100%;
-					left: 0;
-					right: 0;
-					background: rgba(15, 15, 35, 0.95);
-					backdrop-filter: blur(20px);
-					border: 1px solid rgba(139, 92, 246, 0.2);
-					border-radius: 0 0 15px 15px;
-					padding: 2rem;
-
-					.nav-list {
-						flex-direction: column;
-						gap: 1.5rem;
-						width: 100%;
-					}
-				}
-			}
-
-			.search {
-				display: none;
-			}
-
-			.user-actions {
-				display: none;
-			}
-
-			.mobile-menu-btn {
-				display: flex;
-				flex-direction: column;
-				gap: 4px;
-				background: transparent;
-				border: none;
-				cursor: pointer;
-				padding: 8px;
-
-				.hamburger-line {
-					width: 24px;
-					height: 2px;
-					background: linear-gradient(45deg, #8b5cf6, #a855f7);
-					transition: all 0.3s ease;
-					transform-origin: center;
-
-					&--open {
-						&:nth-child(1) {
-							transform: rotate(45deg) translate(6px, 6px);
-						}
-
-						&:nth-child(2) {
-							opacity: 0;
-						}
-
-						&:nth-child(3) {
-							transform: rotate(-45deg) translate(6px, -6px);
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
-@media (min-width: 769px) {
-	.header {
-		.content {
-			.mobile-menu-btn {
-				display: none;
-			}
-		}
 	}
 }
 </style>
