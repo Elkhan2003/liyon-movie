@@ -11,8 +11,6 @@ const { data: todosData, isLoading: isLoadingTodo } = useGetTodosQuery({
 	page: currentPage.value,
 	limit: itemsPerPage.value
 });
-
-console.log(todosData.value);
 </script>
 
 <template>

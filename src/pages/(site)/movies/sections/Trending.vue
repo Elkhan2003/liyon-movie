@@ -155,9 +155,9 @@ const get_rating_color = (rating: number) => {
 <style lang="scss" scoped>
 .trending {
 	position: relative;
-	padding: 30px 0;
+	padding: 4rem 0;
 	overflow: hidden;
-	/* min-height: 100vh; */
+	min-height: 100vh;
 
 	&::before {
 		content: '';
@@ -188,8 +188,8 @@ const get_rating_color = (rating: number) => {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-bottom: 1rem;
-		padding-bottom: 1rem;
+		margin-bottom: 3rem;
+		padding-bottom: 2rem;
 		border-bottom: 1px solid rgba(139, 92, 246, 0.1);
 
 		@media (max-width: 768px) {
@@ -226,10 +226,9 @@ const get_rating_color = (rating: number) => {
 
 		.date_switcher {
 			display: flex;
-			gap: 5px;
 			background: rgba(255, 255, 255, 0.08);
 			border-radius: 50px;
-			padding: 5px;
+			padding: 0.5rem;
 			backdrop-filter: blur(10px);
 			border: 1px solid rgba(139, 92, 246, 0.2);
 
@@ -343,33 +342,12 @@ const get_rating_color = (rating: number) => {
 		}
 
 		.trending_grid {
-			display: flex;
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 			gap: 2rem;
-			overflow-x: auto;
-			overflow-y: hidden;
-			padding: 1rem 0 2rem 0;
-			scroll-behavior: smooth;
-
-			/* Custom scrollbar */
-			&::-webkit-scrollbar {
-				height: 8px;
-			}
-
-			&::-webkit-scrollbar-track {
-				background: rgba(255, 255, 255, 0.1);
-				border-radius: 10px;
-			}
-
-			&::-webkit-scrollbar-thumb {
-				background: linear-gradient(45deg, #8b5cf6, #a855f7);
-				border-radius: 10px;
-
-				&:hover {
-					background: linear-gradient(45deg, #7c3aed, #9333ea);
-				}
-			}
 
 			@media (max-width: 768px) {
+				grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 				gap: 1.5rem;
 			}
 
@@ -381,11 +359,6 @@ const get_rating_color = (rating: number) => {
 				backdrop-filter: blur(10px);
 				transition: all 0.3s ease;
 				cursor: pointer;
-				flex: 0 0 280px; /* Фиксированная ширина, не сжимается */
-
-				@media (max-width: 768px) {
-					flex: 0 0 250px;
-				}
 
 				&:hover {
 					transform: translateY(-10px);
