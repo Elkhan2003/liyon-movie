@@ -12,8 +12,7 @@ const { data: todosData, isLoading: isLoadingTodo } = useGetTodosQuery({
 	limit: itemsPerPage.value
 });
 
-// Computed properties
-const todos = computed(() => todosData.value?.items || []);
+console.log(todosData.value);
 </script>
 
 <template>
@@ -27,11 +26,15 @@ const todos = computed(() => todosData.value?.items || []);
 
 				<!-- Todo list -->
 				<div v-else class="todo__list">
-					<div v-if="todos.length === 0" class="todo__empty">
+					<div v-if="todosData?.items.length === 0" class="todo__empty">
 						Нет задач. Добавьте первую задачу!
 					</div>
 
-					<div v-for="(item, index) in todos" :key="index" class="todo__item">
+					<div
+						v-for="(item, index) in todosData?.items"
+						:key="index"
+						class="todo__item"
+					>
 						<div class="todo__view">
 							<span class="todo__text">{{ item.title }}</span>
 						</div>

@@ -3,7 +3,7 @@ export const api_unimedx = createApiClient({
 });
 
 export const api_tmdb = createApiClient({
-	baseURL: 'https://1116a39bcd510908.mokky.dev',
+	baseURL: 'https://api.themoviedb.org/3',
 	defaultHeaders: {
 		Authorization:
 			'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhNDRhMDEwNTljZTg5MDlmYzgxMTQxYjk3MGJjMzhjYyIsIm5iZiI6MTcwMjgwMTIzMS4yMDUsInN1YiI6IjY1N2VhZjRmMDcyOTFjMDdkZjNlZjIzZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5nJEcU0w0TpoZTgi20a6mQ_ftNMQPbvmqQsjvGLENGM'
