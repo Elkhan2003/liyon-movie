@@ -6,4 +6,7 @@ export default defineNuxtConfig({
 	experimental: {
 		viewTransition: false
 	}
+	// build: {
+	// 	transpile: ['ant-design-vue']
+	// }
 });

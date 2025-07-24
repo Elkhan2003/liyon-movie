@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useHead, useSeoMeta } from 'nuxt/app';
+import AntdProvider from './providers/AntdProvider.vue';
 
 useHead({
 	title: 'LiyonMovie - Смотреть фильмы онлайн',
@@ -36,7 +37,9 @@ useSeoMeta({
 </script>
 
 <template>
-	<NuxtPage />
+	<AntdProvider>
+		<NuxtPage />
+	</AntdProvider>
 </template>
 
 <style>
@@ -91,9 +94,10 @@ button {
 	transition: all 0.2s ease;
 }
 
+/* 
 button:hover {
 	transform: translateY(-2px);
-}
+} */
 
 /* Scrollbar стилизация */
 ::-webkit-scrollbar {
