@@ -3,9 +3,9 @@ import { useGetUpcomingQuery } from '~/api/upcoming';
 
 const { data: upcomingData, isLoading } = useGetUpcomingQuery();
 
-watchEffect(() => {
-	console.log(upcomingData.value?.results);
-});
+// watchEffect(() => {
+// 	console.log(upcomingData.value?.results);
+// });
 
 // Слайдер состояние
 const currentSlide = ref(0);
