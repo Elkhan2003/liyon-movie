@@ -1,4 +1,8 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useGetUpcomingQuery } from '~/api/upcoming';
+
+const { data: upcomingData } = useGetUpcomingQuery();
+</script>
 
 <template>
 	<section class="Welcome">
