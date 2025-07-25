@@ -108,7 +108,11 @@ const handleSearch = () => {
 
 <style scoped lang="scss">
 .header {
-	position: relative;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 9999;
+	width: 100%;
 	backdrop-filter: blur(10px);
 	border-bottom: 1px solid rgba(139, 92, 246, 0.1);
 	padding: 1rem 0;
