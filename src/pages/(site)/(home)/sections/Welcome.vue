@@ -12,11 +12,19 @@ const currentSlide = ref(0);
 const isPaused = ref(false);
 const sliderContainer = ref<HTMLElement>();
 
+// Переменные для точного управления таймингом
+const autoplayInterval = ref<NodeJS.Timeout>();
+const progressStartTime = ref<number>(0);
+const progressDuration = 5000; // 5 секунд
+const elapsedTime = ref<number>(0);
+const isPausedTime = ref<number>(0);
+
 // Функции для работы со слайдером
 const nextSlide = () => {
 	if (upcomingData.value?.results) {
 		currentSlide.value =
 			(currentSlide.value + 1) % upcomingData.value.results.length;
+		resetProgress();
 	}
 };
 
@@ -26,23 +34,40 @@ const prevSlide = () => {
 			currentSlide.value === 0
 				? upcomingData.value.results.length - 1
 				: currentSlide.value - 1;
+		resetProgress();
 	}
 };
 
 const goToSlide = (index: number) => {
 	currentSlide.value = index;
+	resetProgress();
 };
 
-// Автоплей
-const autoplayInterval = ref<NodeJS.Timeout>();
+// Функция для сброса прогресса
+const resetProgress = () => {
+	elapsedTime.value = 0;
+	isPausedTime.value = 0;
+	progressStartTime.value = Date.now();
+	startAutoplay();
+};
 
+// Автоплей с учетом паузы
 const startAutoplay = () => {
 	if (autoplayInterval.value) clearInterval(autoplayInterval.value);
+
+	progressStartTime.value = Date.now();
+
 	autoplayInterval.value = setInterval(() => {
 		if (!isPaused.value) {
-			nextSlide();
+			const now = Date.now();
+			const totalElapsed = now - progressStartTime.value + isPausedTime.value;
+			elapsedTime.value = totalElapsed;
+
+			if (totalElapsed >= progressDuration) {
+				nextSlide();
+			}
 		}
-	}, 5000);
+	}, 16); // ~60fps для плавности
 };
 
 const stopAutoplay = () => {
@@ -50,6 +75,26 @@ const stopAutoplay = () => {
 		clearInterval(autoplayInterval.value);
 	}
 };
+
+// Функция для обработки паузы/воспроизведения
+const togglePlayPause = () => {
+	if (isPaused.value) {
+		// Возобновляем - сбрасываем время начала, но сохраняем накопленное время паузы
+		isPaused.value = false;
+		progressStartTime.value = Date.now();
+	} else {
+		// Ставим на паузу - сохраняем текущее время
+		isPaused.value = true;
+		const now = Date.now();
+		isPausedTime.value = now - progressStartTime.value + isPausedTime.value;
+	}
+};
+
+// Вычисляемое свойство для прогресса
+const progressPercentage = computed(() => {
+	const progress = Math.min((elapsedTime.value / progressDuration) * 100, 100);
+	return progress;
+});
 
 // Утилиты
 const getPosterUrl = (posterPath: string) => {
@@ -83,13 +128,13 @@ const handleKeydown = (event: KeyboardEvent) => {
 		nextSlide();
 	} else if (event.key === ' ') {
 		event.preventDefault();
-		isPaused.value = !isPaused.value;
+		togglePlayPause();
 	}
 };
 
 // Lifecycle
 onMounted(() => {
-	startAutoplay();
+	resetProgress();
 	document.addEventListener('keydown', handleKeydown);
 });
 
@@ -101,8 +146,13 @@ onUnmounted(() => {
 // Рестарт автоплея при изменении данных
 watch(upcomingData, () => {
 	if (upcomingData.value?.results?.length) {
-		startAutoplay();
+		resetProgress();
 	}
+});
+
+// Отслеживание изменения слайда для сброса прогресса
+watch(currentSlide, () => {
+	resetProgress();
 });
 </script>
 
@@ -263,16 +313,17 @@ watch(upcomingData, () => {
 				<div class="slider-progress">
 					<div
 						class="progress-bar"
-						:class="{ 'progress-bar--paused': isPaused }"
-						:style="{ animationDuration: '5000ms' }"
-						:key="currentSlide"
+						:style="{
+							width: `${progressPercentage}%`,
+							transition: isPaused ? 'none' : 'width 16ms linear'
+						}"
 					></div>
 				</div>
 
 				<!-- Play/Pause Control -->
 				<button
 					class="play-pause-btn"
-					@click="isPaused = !isPaused"
+					@click="togglePlayPause"
 					:title="isPaused ? 'Воспроизвести' : 'Пауза'"
 				>
 					<svg v-if="isPaused" viewBox="0 0 24 24" fill="currentColor">
@@ -395,7 +446,6 @@ watch(upcomingData, () => {
 			display: flex;
 			align-items: center;
 			gap: 4rem;
-			/* padding: 0 0 3rem 0; */
 
 			@media (max-width: 1024px) {
 				flex-direction: column;
@@ -723,11 +773,6 @@ watch(upcomingData, () => {
 			height: 100%;
 			background: linear-gradient(45deg, #8b5cf6, #a855f7);
 			width: 0;
-			animation: progress 5000ms linear forwards;
-
-			&--paused {
-				animation-play-state: paused;
-			}
 		}
 	}
 
@@ -789,32 +834,6 @@ watch(upcomingData, () => {
 		bottom: 0;
 		pointer-events: none;
 		z-index: 0;
-
-		.hero-dots {
-			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			bottom: 0;
-			background-image: radial-gradient(
-					2px 2px at 20px 30px,
-					rgba(139, 92, 246, 0.1),
-					transparent
-				),
-				radial-gradient(
-					2px 2px at 40px 70px,
-					rgba(168, 85, 247, 0.1),
-					transparent
-				),
-				radial-gradient(
-					1px 1px at 90px 40px,
-					rgba(192, 132, 252, 0.1),
-					transparent
-				);
-			background-repeat: repeat;
-			background-size: 100px 100px;
-			animation: dots-move 20s linear infinite;
-		}
 
 		.hero-gradient {
 			position: absolute;
