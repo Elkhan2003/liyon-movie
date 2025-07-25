@@ -1,25 +1,28 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { Switch } from 'ant-design-vue';
-import { useGetTradingsQuery } from '~/api/trending';
+import { useGetPopularQuery } from '~/api/popular';
 import MovieList from '~/components/shared/MovieList.vue';
 
-const date_switcher = ref<'day' | 'week'>('day');
+const type_switcher = ref<'movie' | 'tv'>('movie');
 const sort_rating_desc = ref<boolean>(true);
 
 const {
-	data: trending_data,
-	isLoading: is_loading_trending,
-	isError: is_error_trending
-} = useGetTradingsQuery(date_switcher);
+	data: popular_data,
+	isLoading: is_loading_popular,
+	isError: is_error_popular
+} = useGetPopularQuery(type_switcher);
 
 // Computed свойство для отсортированных данных
-const sorted_trending_data = computed(() => {
-	if (!trending_data.value?.results) return [];
+const sorted_popular_data = computed(() => {
+	if (!popular_data.value?.results) return [];
 
-	const results = [...trending_data.value.results];
+	const dataModify = popular_data.value.results.map((item, index) => ({
+		...item,
+		media_type: type_switcher.value
+	}));
 
-	return results.sort((a, b) => {
+	return dataModify.sort((a, b) => {
 		if (sort_rating_desc.value) {
 			return b.vote_average - a.vote_average;
 		} else {
@@ -28,8 +31,8 @@ const sorted_trending_data = computed(() => {
 	});
 });
 
-const handle_switch_date = async (date: 'day' | 'week') => {
-	date_switcher.value = date;
+const handle_switch_type = async (type: 'movie' | 'tv') => {
+	type_switcher.value = type;
 };
 
 const handle_rating_sort = (checked: string | number | boolean) => {
@@ -50,17 +53,17 @@ const handle_play_click = (item: any) => {
 </script>
 
 <template>
-	<section class="trending">
+	<section class="popular">
 		<div class="container">
-			<div class="trending_content">
+			<div class="popular_content">
 				<!-- Header Section -->
-				<div class="trending_header">
-					<div class="trending_title_section">
-						<h1 class="trending_title">Trending</h1>
-						<p class="trending_subtitle">Discover what's popular right now</p>
+				<div class="popular_header">
+					<div class="popular_title_section">
+						<h1 class="popular_title">What's Popular</h1>
+						<p class="popular_subtitle">Most loved content by audiences</p>
 					</div>
 
-					<div class="trending_controls">
+					<div class="popular_controls">
 						<!-- Rating Sort Switch -->
 						<div class="rating_sort">
 							<div class="rating_sort_label">
@@ -88,36 +91,36 @@ const handle_play_click = (item: any) => {
 							/>
 						</div>
 
-						<!-- Date Switcher -->
-						<div class="date_switcher">
+						<!-- Type Switcher -->
+						<div class="type_switcher">
 							<button
-								@click="handle_switch_date('day')"
-								class="date_switcher_btn"
+								@click="handle_switch_type('movie')"
+								class="type_switcher_btn"
 								:class="{
-									'date_switcher_btn--active': date_switcher === 'day'
+									'type_switcher_btn--active': type_switcher === 'movie'
 								}"
 							>
-								<span class="date_switcher_btn_text">Today</span>
+								<span class="type_switcher_btn_text">Movies</span>
 							</button>
 							<button
-								@click="handle_switch_date('week')"
-								class="date_switcher_btn"
+								@click="handle_switch_type('tv')"
+								class="type_switcher_btn"
 								:class="{
-									'date_switcher_btn--active': date_switcher === 'week'
+									'type_switcher_btn--active': type_switcher === 'tv'
 								}"
 							>
-								<span class="date_switcher_btn_text">This Week</span>
+								<span class="type_switcher_btn_text">TV Shows</span>
 							</button>
 						</div>
 					</div>
 				</div>
 
 				<!-- Content Section -->
-				<div class="trending_main">
+				<div class="popular_main">
 					<!-- Error State -->
-					<div v-if="is_error_trending" class="trending_error">
+					<div v-if="is_error_popular" class="popular_error">
 						<div class="error_icon">⚠️</div>
-						<p class="error_text">Failed to load trending content</p>
+						<p class="error_text">Failed to load popular content</p>
 						<button class="error_retry_btn" @click="$router.go(0)">
 							Try Again
 						</button>
@@ -126,8 +129,8 @@ const handle_play_click = (item: any) => {
 					<!-- Movie List Component -->
 					<MovieList
 						v-else
-						:items="sorted_trending_data"
-						:loading="is_loading_trending"
+						:items="sorted_popular_data"
+						:loading="is_loading_popular"
 						@item-click="handle_movie_click"
 						@play-click="handle_play_click"
 					/>
@@ -138,17 +141,17 @@ const handle_play_click = (item: any) => {
 </template>
 
 <style lang="scss" scoped>
-.trending {
+.popular {
 	position: relative;
 	padding: 30px 0;
 	overflow: hidden;
 
-	.trending_content {
+	.popular_content {
 		position: relative;
 		z-index: 10;
 	}
 
-	.trending_header {
+	.popular_header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
@@ -162,8 +165,8 @@ const handle_play_click = (item: any) => {
 			text-align: center;
 		}
 
-		.trending_title_section {
-			.trending_title {
+		.popular_title_section {
+			.popular_title {
 				display: flex;
 				align-items: center;
 				gap: 1rem;
@@ -181,14 +184,14 @@ const handle_play_click = (item: any) => {
 				}
 			}
 
-			.trending_subtitle {
+			.popular_subtitle {
 				color: rgba(255, 255, 255, 0.7);
 				font-size: 1.1rem;
 				margin: 0;
 			}
 		}
 
-		.trending_controls {
+		.popular_controls {
 			display: flex;
 			align-items: center;
 			gap: 1.5rem;
@@ -231,7 +234,7 @@ const handle_play_click = (item: any) => {
 				}
 			}
 
-			.date_switcher {
+			.type_switcher {
 				display: flex;
 				gap: 5px;
 				background: rgba(255, 255, 255, 0.08);
@@ -240,7 +243,7 @@ const handle_play_click = (item: any) => {
 				backdrop-filter: blur(10px);
 				border: 1px solid rgba(139, 92, 246, 0.2);
 
-				.date_switcher_btn {
+				.type_switcher_btn {
 					background: transparent;
 					border: none;
 					padding: 0.75rem 1.5rem;
@@ -264,7 +267,7 @@ const handle_play_click = (item: any) => {
 						transition: opacity 0.3s ease;
 					}
 
-					.date_switcher_btn_text {
+					.type_switcher_btn_text {
 						position: relative;
 						z-index: 2;
 					}
@@ -290,8 +293,8 @@ const handle_play_click = (item: any) => {
 		}
 	}
 
-	.trending_main {
-		.trending_error {
+	.popular_main {
+		.popular_error {
 			display: flex;
 			flex-direction: column;
 			align-items: center;

@@ -356,7 +356,8 @@ const handle_play_click = (item: MovieItem, event: Event) => {
 						border-radius: 15px;
 						font-size: 0.8rem;
 						font-weight: 500;
-						text-transform: capitalize;
+						/* text-transform: capitalize; */
+						text-transform: uppercase;
 					}
 
 					.movie_item_rating_badge {
