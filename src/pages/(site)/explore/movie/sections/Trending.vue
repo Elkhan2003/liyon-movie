@@ -155,7 +155,7 @@ const get_rating_color = (rating: number) => {
 <style lang="scss" scoped>
 .trending {
 	position: relative;
-	padding: 4rem 0;
+	padding: 30px 0;
 	overflow: hidden;
 	min-height: 100vh;
 

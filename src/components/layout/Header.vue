@@ -1,30 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-const searchQuery = ref('');
+import { navigationRoutes } from '~/utils/constants/route-links';
 
-// Массив роутов для навигации
-const navigationRoutes = [
-	{
-		name: 'Главная',
-		path: '/'
-	},
-	{
-		name: 'Фильмы',
-		path: '/movies'
-	},
-	{
-		name: 'TV шоу',
-		path: '/tv-show'
-	},
-	{
-		name: 'Задачи',
-		path: '/todo'
-	},
-	{
-		name: 'Топ 100',
-		path: '/top-100'
-	}
-];
+const searchQuery = ref('');
 
 const handleSearch = () => {
 	if (searchQuery.value.trim()) {
