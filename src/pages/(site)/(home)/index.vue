@@ -7,7 +7,7 @@ import TopRated from './sections/TopRated.vue';
 
 <template>
 	<NuxtLayout name="site">
-		<Welcome />
+		<!-- <Welcome /> -->
 		<Trending />
 		<Popular />
 		<TopRated />
