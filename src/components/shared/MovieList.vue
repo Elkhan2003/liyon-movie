@@ -23,7 +23,6 @@ const emit = defineEmits<{
 	playClick: [item: MovieItem];
 }>();
 
-// Оптимизированные computed для предотвращения пересчетов
 const processedItems = computed(() => {
 	return props.items.map((item) => ({
 		...item,
@@ -33,14 +32,12 @@ const processedItems = computed(() => {
 	}));
 });
 
-// Вынесенная функция для цвета рейтинга
 const getRatingColor = (rating: number): string => {
-	if (rating >= 8) return '#10b981'; // green
-	if (rating >= 6) return '#f59e0b'; // yellow
-	return '#ef4444'; // red
+	if (rating >= 8) return '#10b981';
+	if (rating >= 6) return '#f59e0b';
+	return '#ef4444';
 };
 
-// Оптимизированные обработчики событий
 const handleItemClick = (item: MovieItem) => {
 	emit('itemClick', item);
 };
@@ -50,7 +47,6 @@ const handlePlayClick = (item: MovieItem, event: Event) => {
 	emit('playClick', item);
 };
 
-// Мемоизированные skeleton items для предотвращения пересоздания
 const skeletonItems = computed(() => Array.from({ length: 6 }, (_, i) => i));
 </script>
 

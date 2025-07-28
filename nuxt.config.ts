@@ -9,5 +9,5 @@ export default defineNuxtConfig({
 	modules: ['@pinia/nuxt']
 	// build: {
 	// 	transpile: ['ant-design-vue']
-	// }
+	// },
 });
