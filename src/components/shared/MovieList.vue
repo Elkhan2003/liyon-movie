@@ -23,24 +23,35 @@ const emit = defineEmits<{
 	playClick: [item: MovieItem];
 }>();
 
-const get_poster_url = (poster_path: string) => {
-	return `https://image.tmdb.org/t/p/w500${poster_path}`;
-};
+// Оптимизированные computed для предотвращения пересчетов
+const processedItems = computed(() => {
+	return props.items.map((item) => ({
+		...item,
+		posterUrl: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
+		ratingColor: getRatingColor(item.vote_average),
+		formattedRating: item.vote_average.toFixed(1)
+	}));
+});
 
-const get_rating_color = (rating: number) => {
+// Вынесенная функция для цвета рейтинга
+const getRatingColor = (rating: number): string => {
 	if (rating >= 8) return '#10b981'; // green
 	if (rating >= 6) return '#f59e0b'; // yellow
 	return '#ef4444'; // red
 };
 
-const handle_item_click = (item: MovieItem) => {
+// Оптимизированные обработчики событий
+const handleItemClick = (item: MovieItem) => {
 	emit('itemClick', item);
 };
 
-const handle_play_click = (item: MovieItem, event: Event) => {
+const handlePlayClick = (item: MovieItem, event: Event) => {
 	event.stopPropagation();
 	emit('playClick', item);
 };
+
+// Мемоизированные skeleton items для предотвращения пересоздания
+const skeletonItems = computed(() => Array.from({ length: 6 }, (_, i) => i));
 </script>
 
 <template>
@@ -48,9 +59,9 @@ const handle_play_click = (item: MovieItem, event: Event) => {
 		<!-- Loading Skeleton -->
 		<div v-if="loading" class="movie_grid">
 			<div
+				v-for="i in skeletonItems"
+				:key="`skeleton-${i}`"
 				class="movie_item movie_item--skeleton"
-				v-for="i in 6"
-				:key="'skeleton-' + i"
 			>
 				<div class="movie_item_inner">
 					<div class="movie_item_poster skeleton_poster"></div>
@@ -70,19 +81,20 @@ const handle_play_click = (item: MovieItem, event: Event) => {
 		<!-- Movie Grid -->
 		<div v-else class="movie_grid">
 			<div
+				v-for="processedItem in processedItems"
+				:key="processedItem.id"
 				class="movie_item"
-				v-for="(item, index) in items"
-				:key="item.id || index"
-				@click="handle_item_click(item)"
+				@click="handleItemClick(processedItem)"
 			>
 				<div class="movie_item_inner">
 					<!-- Poster -->
 					<div class="movie_item_poster">
 						<img
-							:src="get_poster_url(item.poster_path)"
-							:alt="item.title"
+							:src="processedItem.posterUrl"
+							:alt="processedItem.title"
 							class="movie_item_image"
 							loading="lazy"
+							decoding="async"
 						/>
 						<div class="movie_item_overlay">
 							<div class="movie_item_rating">
@@ -92,18 +104,19 @@ const handle_play_click = (item: MovieItem, event: Event) => {
 									height="16"
 									viewBox="0 0 24 24"
 									fill="currentColor"
+									aria-hidden="true"
 								>
 									<path
 										d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.46,13.97L5.82,21L12,17.27Z"
 									/>
 								</svg>
-								<span class="rating_value">{{
-									item.vote_average.toFixed(1)
-								}}</span>
+								<span class="rating_value">
+									{{ processedItem.formattedRating }}
+								</span>
 							</div>
 							<div
 								class="movie_item_play"
-								@click="handle_play_click(item, $event)"
+								@click="handlePlayClick(processedItem, $event)"
 							>
 								<svg
 									class="play_icon"
@@ -111,6 +124,7 @@ const handle_play_click = (item: MovieItem, event: Event) => {
 									height="24"
 									viewBox="0 0 24 24"
 									fill="currentColor"
+									aria-hidden="true"
 								>
 									<path d="M8,5.14V19.14L19,12.14L8,5.14Z" />
 								</svg>
@@ -120,17 +134,19 @@ const handle_play_click = (item: MovieItem, event: Event) => {
 
 					<!-- Info -->
 					<div class="movie_item_info">
-						<h3 class="movie_item_title">{{ item.title }}</h3>
-						<p class="movie_item_date">{{ item.release_date }}</p>
-						<p class="movie_item_overview">{{ item.overview }}</p>
+						<h3 class="movie_item_title">{{ processedItem.title }}</h3>
+						<p class="movie_item_date">{{ processedItem.release_date }}</p>
+						<p class="movie_item_overview">{{ processedItem.overview }}</p>
 						<div class="movie_item_meta">
-							<span class="movie_item_type">{{ item.media_type }}</span>
+							<span class="movie_item_type">{{
+								processedItem.media_type
+							}}</span>
 							<div class="movie_item_rating_badge">
 								<span
 									class="rating_badge"
-									:style="{ color: get_rating_color(item.vote_average) }"
+									:style="{ color: processedItem.ratingColor }"
 								>
-									{{ item.vote_average.toFixed(1) }}
+									{{ processedItem.formattedRating }}
 								</span>
 							</div>
 						</div>
@@ -150,6 +166,8 @@ const handle_play_click = (item: MovieItem, event: Event) => {
 		overflow-y: hidden;
 		padding: 1rem 0 2rem 0;
 		scroll-behavior: smooth;
+		// Добавляем will-change для оптимизации анимаций
+		will-change: scroll-position;
 
 		/* Custom scrollbar */
 		&::-webkit-scrollbar {
@@ -182,16 +200,22 @@ const handle_play_click = (item: MovieItem, event: Event) => {
 			backdrop-filter: blur(10px);
 			transition: all 0.3s ease;
 			cursor: pointer;
-			flex: 0 0 280px; /* Фиксированная ширина, не сжимается */
+			flex: 0 0 280px;
+			// Оптимизация для GPU рендеринга
+			transform: translateZ(0);
+			will-change: transform;
 
 			@media (max-width: 768px) {
 				flex: 0 0 250px;
 			}
 
 			&:hover {
-				transform: translateY(-10px);
+				transform: translateY(-10px) translateZ(0);
 				border-color: rgba(139, 92, 246, 0.4);
 				box-shadow: 0 20px 40px rgba(139, 92, 246, 0.2);
+				@media (max-width: 768px) {
+					box-shadow: none;
+				}
 
 				.movie_item_image {
 					transform: scale(1.1);
@@ -206,7 +230,7 @@ const handle_play_click = (item: MovieItem, event: Event) => {
 				cursor: default;
 
 				&:hover {
-					transform: none;
+					transform: translateZ(0);
 					border-color: rgba(139, 92, 246, 0.2);
 					box-shadow: none;
 				}
@@ -222,12 +246,16 @@ const handle_play_click = (item: MovieItem, event: Event) => {
 				position: relative;
 				aspect-ratio: 2/3;
 				overflow: hidden;
+				// Оптимизация изображений
+				contain: layout style paint;
 
 				.movie_item_image {
 					width: 100%;
 					height: 100%;
 					object-fit: cover;
 					transition: transform 0.3s ease;
+					// Предотвращение layout shift
+					display: block;
 				}
 
 				&.skeleton_poster {
@@ -243,10 +271,7 @@ const handle_play_click = (item: MovieItem, event: Event) => {
 
 				.movie_item_overlay {
 					position: absolute;
-					top: 0;
-					left: 0;
-					right: 0;
-					bottom: 0;
+					inset: 0;
 					background: linear-gradient(
 						45deg,
 						rgba(139, 92, 246, 0.8),
@@ -257,6 +282,8 @@ const handle_play_click = (item: MovieItem, event: Event) => {
 					justify-content: center;
 					opacity: 0;
 					transition: opacity 0.3s ease;
+					// Оптимизация композитного слоя
+					will-change: opacity;
 
 					.movie_item_rating {
 						position: absolute;
@@ -293,6 +320,7 @@ const handle_play_click = (item: MovieItem, event: Event) => {
 						backdrop-filter: blur(10px);
 						border: 2px solid rgba(255, 255, 255, 0.3);
 						transition: all 0.3s ease;
+						will-change: transform;
 
 						&:hover {
 							background: rgba(255, 255, 255, 0.3);
@@ -323,6 +351,7 @@ const handle_play_click = (item: MovieItem, event: Event) => {
 					-webkit-line-clamp: 2;
 					-webkit-box-orient: vertical;
 					overflow: hidden;
+					word-break: break-word;
 				}
 
 				.movie_item_date {
@@ -341,6 +370,7 @@ const handle_play_click = (item: MovieItem, event: Event) => {
 					-webkit-line-clamp: 3;
 					-webkit-box-orient: vertical;
 					overflow: hidden;
+					word-break: break-word;
 				}
 
 				.movie_item_meta {
@@ -356,7 +386,6 @@ const handle_play_click = (item: MovieItem, event: Event) => {
 						border-radius: 15px;
 						font-size: 0.8rem;
 						font-weight: 500;
-						/* text-transform: capitalize; */
 						text-transform: uppercase;
 					}
 
@@ -368,9 +397,12 @@ const handle_play_click = (item: MovieItem, event: Event) => {
 					}
 				}
 
-				// Skeleton styles
-				.skeleton_title {
-					height: 1.5rem;
+				// Skeleton styles с содержанием layout и style
+				.skeleton_title,
+				.skeleton_date,
+				.skeleton_overview,
+				.skeleton_type,
+				.skeleton_rating {
 					background: linear-gradient(
 						90deg,
 						rgba(255, 255, 255, 0.1) 25%,
@@ -380,35 +412,22 @@ const handle_play_click = (item: MovieItem, event: Event) => {
 					background-size: 200% 100%;
 					animation: shimmer 2s infinite;
 					border-radius: 4px;
+					contain: layout style;
+				}
+
+				.skeleton_title {
+					height: 1.5rem;
 					margin-bottom: 0.5rem;
 				}
 
 				.skeleton_date {
 					height: 1rem;
 					width: 60%;
-					background: linear-gradient(
-						90deg,
-						rgba(255, 255, 255, 0.1) 25%,
-						rgba(255, 255, 255, 0.2) 50%,
-						rgba(255, 255, 255, 0.1) 75%
-					);
-					background-size: 200% 100%;
-					animation: shimmer 2s infinite;
-					border-radius: 4px;
 					margin-bottom: 1rem;
 				}
 
 				.skeleton_overview {
 					height: 3rem;
-					background: linear-gradient(
-						90deg,
-						rgba(255, 255, 255, 0.1) 25%,
-						rgba(255, 255, 255, 0.2) 50%,
-						rgba(255, 255, 255, 0.1) 75%
-					);
-					background-size: 200% 100%;
-					animation: shimmer 2s infinite;
-					border-radius: 4px;
 					margin-bottom: 1rem;
 					flex: 1;
 				}
@@ -416,29 +435,12 @@ const handle_play_click = (item: MovieItem, event: Event) => {
 				.skeleton_type {
 					height: 1.5rem;
 					width: 60px;
-					background: linear-gradient(
-						90deg,
-						rgba(255, 255, 255, 0.1) 25%,
-						rgba(255, 255, 255, 0.2) 50%,
-						rgba(255, 255, 255, 0.1) 75%
-					);
-					background-size: 200% 100%;
-					animation: shimmer 2s infinite;
 					border-radius: 15px;
 				}
 
 				.skeleton_rating {
 					height: 1rem;
 					width: 30px;
-					background: linear-gradient(
-						90deg,
-						rgba(255, 255, 255, 0.1) 25%,
-						rgba(255, 255, 255, 0.2) 50%,
-						rgba(255, 255, 255, 0.1) 75%
-					);
-					background-size: 200% 100%;
-					animation: shimmer 2s infinite;
-					border-radius: 4px;
 				}
 			}
 		}
