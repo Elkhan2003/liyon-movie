@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import Popular from './sections/Popular.vue';
+import Test from './sections/Test.vue';
 </script>
 
 <template>
 	<NuxtLayout name="site">
-		<Popular />
+		<Test />
 	</NuxtLayout>
 </template>
 

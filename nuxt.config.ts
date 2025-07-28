@@ -5,7 +5,8 @@ export default defineNuxtConfig({
 	srcDir: 'src/',
 	experimental: {
 		viewTransition: false
-	}
+	},
+	modules: ['@pinia/nuxt']
 	// build: {
 	// 	transpile: ['ant-design-vue']
 	// }

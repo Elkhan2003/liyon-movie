@@ -12,11 +12,7 @@ export const navigationRoutes = [
 		path: '/explore/tv-show'
 	},
 	{
-		name: 'Задачи',
-		path: '/todo'
-	},
-	{
-		name: 'Топ 100',
-		path: '/top-100'
+		name: 'Inject',
+		path: '/inject'
 	}
 ];
