@@ -2,12 +2,14 @@
 import { ref } from 'vue';
 import { navigationRoutes } from '~/utils/constants/route-links';
 
+const searchStore = useSearchStore();
+
 const searchQuery = ref('');
 
 const handleSearch = () => {
 	if (searchQuery.value.trim()) {
 		console.log('Поиск:', searchQuery.value);
-		// Здесь будет логика поиска
+		searchStore.setSearchQuery(searchQuery.value);
 	}
 };
 </script>
@@ -52,6 +54,7 @@ const handleSearch = () => {
 							placeholder="Поиск фильмов, сериалов..."
 							class="search-input"
 							@keyup.enter="handleSearch"
+							@click="searchStore.toggleSearchModal"
 						/>
 						<button @click="handleSearch" class="search-btn">
 							<svg
@@ -86,7 +89,7 @@ const handleSearch = () => {
 
 <style scoped lang="scss">
 .header {
-	position: fixed;
+	position: sticky;
 	top: 0;
 	left: 0;
 	z-index: 9999;

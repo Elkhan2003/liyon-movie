@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useHead, useSeoMeta } from 'nuxt/app';
 import AntdProvider from './providers/AntdProvider.vue';
+import SearchModal from './components/shared/SearchModal.vue';
 
 useHead({
 	title: 'LiyonMovie - Смотреть фильмы онлайн',
@@ -40,6 +41,7 @@ useSeoMeta({
 	<AntdProvider>
 		<NuxtPage />
 	</AntdProvider>
+	<SearchModal />
 </template>
 
 <style>
@@ -101,7 +103,7 @@ button:hover {
 
 /* Scrollbar стилизация */
 ::-webkit-scrollbar {
-	width: 8px;
+	width: 4px;
 }
 
 ::-webkit-scrollbar-track {

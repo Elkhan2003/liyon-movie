@@ -12,3 +12,27 @@ export const useCounterStore = defineStore('counter', {
 		}
 	}
 });
+
+// export const useCounterStore = defineStore('counter', () => {
+//   // State
+//   const count = ref(0);
+
+//   // Actions
+//   const increment = () => {
+//     count.value++;
+//   };
+
+//   const decrement = () => {
+//     count.value--;
+//   };
+
+//   // Getters
+//   const doubleCount = computed(() => count.value * 2);
+
+//   return {
+//     count,
+//     increment,
+//     decrement,
+//     doubleCount
+//   };
+// });

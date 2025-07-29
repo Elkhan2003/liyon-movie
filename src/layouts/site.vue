@@ -8,7 +8,7 @@ const route = useRoute();
 <template>
 	<div class="LayoutSite">
 		<Header />
-		<main class="main" :class="route.path !== '/' && 'active'">
+		<main class="main" :class="route.path === '/' && 'active'">
 			<slot />
 		</main>
 		<Footer />
@@ -23,7 +23,9 @@ const route = useRoute();
 	min-height: 100vh;
 	.main {
 		&.active {
-			padding-top: 80px;
+			position: relative;
+			top: -80px;
+			/* padding-top: 80px; */
 		}
 	}
 	footer {
