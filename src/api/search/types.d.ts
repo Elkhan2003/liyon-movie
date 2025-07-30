@@ -1,6 +1,8 @@
 namespace SEARCH {
 	type GetSearchRes = {
 		page: number;
+		total_pages: number;
+		total_results: number;
 		results: Array<{
 			adult: boolean;
 			backdrop_path?: string;
@@ -42,8 +44,6 @@ namespace SEARCH {
 				origin_country: Array<string>;
 			}>;
 		}>;
-		total_pages: number;
-		total_results: number;
 	};
 	type GetSearchReq = {
 		search: string;

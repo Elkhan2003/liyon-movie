@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Search, X, Loader2 } from 'lucide-vue-next';
+import { Search, X, Loader2, Image } from 'lucide-vue-next';
+import { Pagination } from 'ant-design-vue';
 import { useGetSearchQuery } from '~/api/search';
 import { ref, computed, watch } from 'vue';
 import { useDebounceFn } from '@vueuse/core';
@@ -17,8 +18,20 @@ const searchParams = computed(() => ({
 	page: currentPage.value
 }));
 
-const searchQuery = useGetSearchQuery(searchParams, {
+const searchData = useGetSearchQuery(searchParams, {
 	enabled: computed(() => debouncedSearchInput.value.trim().length > 0)
+});
+
+const allResults = computed(() => {
+	return searchData.data.value?.results || [];
+});
+
+const totalResults = computed(() => {
+	return searchData.data.value?.total_results || 0;
+});
+
+const totalPages = computed(() => {
+	return searchData.data.value?.total_pages || 0;
 });
 
 const getYearFromDate = (dateString: string | undefined): string => {
@@ -33,6 +46,25 @@ const getYearFromDate = (dateString: string | undefined): string => {
 const getItemYear = (item: any): string => {
 	const dateString = item.release_date || item.first_air_date;
 	return getYearFromDate(dateString);
+};
+
+const getRating = (item: any): string => {
+	const rating = item.vote_average;
+	return rating ? rating.toFixed(1) : '0.0';
+};
+
+const truncateTitle = (title?: string, maxLength: number = 20): string => {
+	if (!title) return '';
+	if (title.length <= maxLength) return title;
+	const words = title.split(' ');
+	let result = '';
+	for (const word of words) {
+		if ((result + word).length > maxLength) {
+			break;
+		}
+		result += (result ? ' ' : '') + word;
+	}
+	return result + '...';
 };
 
 const closeModal = () => {
@@ -51,6 +83,10 @@ const handleItemClick = (item: any) => {
 	} else if (item.media_type === 'person') {
 		router.push(`/person/${item.id}`);
 	}
+};
+
+const handlePageChange = (page: number) => {
+	currentPage.value = page;
 };
 
 const debouncedSearch = useDebounceFn((value: string) => {
@@ -87,94 +123,101 @@ watch(searchInput, (newValue) => {
 						</div>
 					</div>
 
-					<div class="results_content">
+					<div class="results_content" ref="resultsContainer">
 						<!-- Состояние загрузки -->
-						<div v-if="searchQuery.isLoading.value" class="loading_state">
+						<div
+							v-if="searchData.isLoading.value && currentPage === 1"
+							class="loading_state"
+						>
 							<Loader2 class="loading_icon" :size="24" />
 							<p>Поиск...</p>
 						</div>
 
 						<!-- Состояние ошибки -->
-						<div v-else-if="searchQuery.isError.value" class="error_state">
+						<div v-else-if="searchData.isError.value" class="error_state">
 							<p>Произошла ошибка при поиске</p>
 						</div>
 
-						<!-- Результаты поиска - используем debouncedSearchInput для отображения -->
+						<!-- Результаты поиска -->
 						<div
-							v-else-if="searchQuery.data.value && debouncedSearchInput.trim()"
+							v-else-if="allResults.length > 0 && debouncedSearchInput.trim()"
 							class="search_results"
 						>
-							<div
-								v-if="searchQuery.data.value.results.length === 0"
-								class="no_results"
-							>
-								<p>Ничего не найдено для "{{ debouncedSearchInput }}"</p>
+							<div class="results_info">
+								<p class="results_count">
+									Найдено {{ totalResults }} результатов
+								</p>
 							</div>
 
-							<div v-else class="results_grid">
+							<div class="results_grid">
 								<div
-									v-for="item in searchQuery.data.value.results"
-									:key="item.id"
+									v-for="item in allResults"
+									:key="`${item.id}-${item.media_type}`"
 									class="result_item"
 									@click="handleItemClick(item)"
 								>
 									<div class="result_poster">
 										<img
 											v-if="item.poster_path"
-											:src="`https://image.tmdb.org/t/p/w200${item.poster_path}`"
+											:src="`https://image.tmdb.org/t/p/w500${item.poster_path}`"
 											:alt="item.title || item.name"
 											class="poster_image"
 										/>
 										<div v-else class="poster_placeholder">
-											<Search :size="24" />
+											<Image :size="48" class="placeholder_icon" />
+											<span class="placeholder_text">Нет изображения</span>
 										</div>
 									</div>
 
 									<div class="result_info">
 										<h3 class="result_title">
-											{{ item.title || item.name }}
+											<span class="rating_badge">{{ getRating(item) }}</span>
+											<span class="cinema_name">{{
+												truncateTitle(item.title || item.name)
+											}}</span>
 										</h3>
-										<p class="result_year">
-											{{ getItemYear(item) }}
-										</p>
-										<p class="result_type">
-											{{
-												item.media_type === 'movie'
-													? 'Фильм'
-													: item.media_type === 'tv'
-													? 'Сериал'
-													: 'Персона'
-											}}
-										</p>
+
+										<div class="result_meta">
+											<span class="result_year">{{ getItemYear(item) }},</span>
+											<span class="result_type">
+												{{
+													item.media_type === 'movie'
+														? 'Фильм'
+														: item.media_type === 'tv'
+														? 'Сериал'
+														: 'Персона'
+												}}
+											</span>
+										</div>
 									</div>
 								</div>
 							</div>
 
 							<!-- Пагинация -->
-							<div
-								v-if="searchQuery.data.value.total_pages > 1"
-								class="pagination"
-							>
-								<button
-									:disabled="currentPage === 1"
-									@click="currentPage--"
-									class="pagination_btn"
-								>
-									Предыдущая
-								</button>
-
-								<span class="pagination_info">
-									{{ currentPage }} из {{ searchQuery.data.value.total_pages }}
-								</span>
-
-								<button
-									:disabled="currentPage === searchQuery.data.value.total_pages"
-									@click="currentPage++"
-									class="pagination_btn"
-								>
-									Следующая
-								</button>
+							<div v-if="totalPages > 1" class="pagination_wrapper">
+								<Pagination
+									v-model:current="currentPage"
+									:total="totalResults"
+									:pageSize="20"
+									:showSizeChanger="false"
+									:showQuickJumper="false"
+									:showTotal="
+										(total, range) => `${range[0]}-${range[1]} из ${total}`
+									"
+									@change="handlePageChange"
+									class="search_pagination"
+								/>
 							</div>
+						</div>
+
+						<!-- Нет результатов -->
+						<div
+							v-else-if="
+								debouncedSearchInput.trim() && !searchData.isLoading.value
+							"
+							class="no_results"
+						>
+							<p>Ничего не найдено для "{{ debouncedSearchInput }}"</p>
 						</div>
 					</div>
 				</div>
@@ -190,7 +233,7 @@ watch(searchInput, (newValue) => {
 	left: 0;
 	width: 100vw;
 	height: 100vh;
-	background: rgba(0, 0, 0, 0.6);
+	background: rgba(0, 0, 0, 0.8);
 	backdrop-filter: blur(10px);
 	-webkit-backdrop-filter: blur(10px);
 	display: flex;
@@ -213,7 +256,7 @@ watch(searchInput, (newValue) => {
 			right: 2rem;
 			width: 2.5rem;
 			height: 2.5rem;
-			background: transparent;
+			background: rgba(255, 255, 255, 0.1);
 			border: none;
 			color: white;
 			cursor: pointer;
@@ -223,9 +266,10 @@ watch(searchInput, (newValue) => {
 			border-radius: 50%;
 			transition: all 0.2s ease;
 			z-index: 10;
+			backdrop-filter: blur(10px);
 
 			&:hover {
-				background: rgba(255, 255, 255, 0.1);
+				background: rgba(255, 255, 255, 0.2);
 				transform: scale(1.1);
 			}
 
@@ -305,6 +349,7 @@ watch(searchInput, (newValue) => {
 			flex: 1;
 			padding: 2rem 4rem;
 			overflow-y: auto;
+			scroll-behavior: smooth;
 
 			.loading_state,
 			.error_state,
@@ -324,103 +369,157 @@ watch(searchInput, (newValue) => {
 			}
 
 			.search_results {
+				.results_info {
+					margin-bottom: 1.5rem;
+
+					.results_count {
+						color: rgba(255, 255, 255, 0.7);
+						font-size: 0.9rem;
+						margin: 0;
+					}
+				}
+
 				.results_grid {
 					display: grid;
-					grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-					gap: 1.5rem;
+					grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+					gap: 2rem;
 					margin-bottom: 2rem;
 
 					.result_item {
-						background: rgba(255, 255, 255, 0.05);
-						border-radius: 8px;
-						padding: 1rem;
+						border-radius: 16px;
+						padding: 0;
 						cursor: pointer;
-						transition: all 0.3s ease;
-						border: 1px solid transparent;
+						transition: all 0.7s ease;
+						overflow: hidden;
 
 						&:hover {
-							background: rgba(255, 255, 255, 0.1);
-							border-color: rgba(200, 162, 255, 0.3);
-							transform: translateY(-2px);
+							transform: scale(1.02);
 						}
 
 						.result_poster {
+							position: relative;
+							display: flex;
+							justify-content: center;
+							align-items: center;
 							width: 100%;
-							aspect-ratio: 2/3;
-							margin-bottom: 0.5rem;
-							border-radius: 6px;
+							border: 16px;
+							border-radius: 16px;
 							overflow: hidden;
+							aspect-ratio: 2/3; // Устанавливаем соотношение сторон как у постера
+							background: rgba(255, 255, 255, 0.05); // Фон для заглушки
 
 							.poster_image {
 								width: 100%;
 								height: 100%;
 								object-fit: cover;
+								transition: transform 0.3s ease;
 							}
 
 							.poster_placeholder {
 								width: 100%;
 								height: 100%;
-								background: rgba(255, 255, 255, 0.1);
 								display: flex;
+								flex-direction: column;
 								align-items: center;
 								justify-content: center;
-								color: rgba(255, 255, 255, 0.5);
+								background: linear-gradient(
+									135deg,
+									rgba(95, 0, 215, 0.1) 0%,
+									rgba(200, 162, 255, 0.05) 100%
+								);
+								border: 2px dashed rgba(255, 255, 255, 0.2);
+								border-radius: 16px;
+								gap: 0.5rem;
+
+								.placeholder_icon {
+									color: rgba(255, 255, 255, 0.4);
+									margin-bottom: 0.5rem;
+								}
+
+								.placeholder_text {
+									color: rgba(255, 255, 255, 0.6);
+									font-size: 0.8rem;
+									font-weight: 500;
+									text-align: center;
+								}
 							}
 						}
 
 						.result_info {
+							padding: 10px 0 20px 0;
+							position: relative;
+
 							.result_title {
+								display: flex;
+								align-items: center;
+								gap: 0.5rem;
 								color: white;
-								font-size: 0.9rem;
-								font-weight: 600;
-								margin-bottom: 0.25rem;
-								line-height: 1.2;
-								display: -webkit-box;
-								-webkit-line-clamp: 2;
-								-webkit-box-orient: vertical;
-								overflow: hidden;
+
+								.rating_badge {
+									background: radial-gradient(
+											50.11% 34.33% at 50.22% 91.67%,
+											hsla(0, 0%, 100%, 0.3) 3.13%,
+											hsla(0, 0%, 100%, 0.15) 41.15%,
+											rgba(0, 0, 0, 0.15) 100%
+										),
+										linear-gradient(0deg, #5f00d7, #5f00d7);
+									border-radius: 10px;
+									color: #feffff;
+									font-size: 14px;
+									font-weight: 600;
+									margin-left: 2px;
+									min-width: 45px;
+									padding: 7px 12px;
+									text-align: center;
+								}
+
+								.cinema_name {
+									font-size: 1.1rem;
+									font-weight: 700;
+									margin-bottom: 0.5rem;
+									line-height: 1.3;
+									display: -webkit-box;
+									-webkit-box-orient: vertical;
+									overflow: hidden;
+									margin-top: 0.5rem;
+								}
 							}
 
-							.result_year,
-							.result_type {
-								color: rgba(255, 255, 255, 0.7);
-								font-size: 0.8rem;
-								margin-bottom: 0.1rem;
+							.result_meta {
+								margin: 5px 0;
+								display: flex;
+								align-items: center;
+								gap: 0.5rem;
+
+								.result_year,
+								.result_type {
+									color: rgba(255, 255, 255, 0.7);
+									font-size: 0.9rem;
+									font-weight: 500;
+								}
 							}
 						}
 					}
 				}
 
-				.pagination {
+				.loading_more {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					gap: 0.5rem;
+					padding: 2rem;
+					color: rgba(255, 255, 255, 0.7);
+
+					.loading_icon {
+						animation: spin 1s linear infinite;
+					}
+				}
+
+				.pagination_wrapper {
 					display: flex;
 					justify-content: center;
-					align-items: center;
-					gap: 1rem;
-					margin-top: 2rem;
-
-					.pagination_btn {
-						background: rgba(255, 255, 255, 0.1);
-						border: 1px solid rgba(255, 255, 255, 0.2);
-						color: white;
-						padding: 0.5rem 1rem;
-						border-radius: 6px;
-						cursor: pointer;
-						transition: all 0.3s ease;
-
-						&:hover:not(:disabled) {
-							background: rgba(255, 255, 255, 0.2);
-						}
-
-						&:disabled {
-							opacity: 0.5;
-							cursor: not-allowed;
-						}
-					}
-
-					.pagination_info {
-						color: rgba(255, 255, 255, 0.8);
-						font-size: 0.9rem;
-					}
+					padding: 20px 0;
+					border-top: 1px solid rgba(255, 255, 255, 0.1);
 				}
 			}
 		}
@@ -473,5 +572,34 @@ watch(searchInput, (newValue) => {
 // Убираем скролл у body когда модалка открыта
 :global(body:has(.modal_overlay)) {
 	overflow: hidden;
+}
+
+// Responsive design
+@media (max-width: 1200px) {
+	.modal_content .results_content .search_results .results_grid {
+		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+		gap: 1.5rem;
+	}
+}
+
+@media (max-width: 768px) {
+	.modal_content {
+		.search_content {
+			padding: 2rem 2rem 1rem 2rem;
+
+			.search_title {
+				font-size: 2.5rem;
+			}
+		}
+
+		.results_content {
+			padding: 1rem 2rem;
+
+			.search_results .results_grid {
+				grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+				gap: 1rem;
+			}
+		}
+	}
 }
 </style>
